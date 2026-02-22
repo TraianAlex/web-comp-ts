@@ -58,17 +58,27 @@ export class Playground {
           <button class="btn btn-primary" data-run>Run</button>
           <button class="btn btn-secondary" data-reset>Reset</button>
         </div>
+        <div class="playground-restore-tabs" data-restore-tabs hidden></div>
         <div class="playground-editors">
-          <div class="playground-editor-pane">
-            <label>HTML</label>
+          <div class="playground-editor-pane" data-pane="html">
+            <div class="playground-editor-pane-header">
+              <label>HTML</label>
+              <button type="button" class="playground-pane-toggle" data-toggle="html" title="Hide HTML">×</button>
+            </div>
             <textarea data-html spellcheck="false" placeholder="Write your HTML..."></textarea>
           </div>
-          <div class="playground-editor-pane">
-            <label>CSS</label>
+          <div class="playground-editor-pane" data-pane="css">
+            <div class="playground-editor-pane-header">
+              <label>CSS</label>
+              <button type="button" class="playground-pane-toggle" data-toggle="css" title="Hide CSS">×</button>
+            </div>
             <textarea data-css spellcheck="false" placeholder="Write your CSS..."></textarea>
           </div>
-          <div class="playground-editor-pane">
-            <label>JavaScript</label>
+          <div class="playground-editor-pane" data-pane="js">
+            <div class="playground-editor-pane-header">
+              <label>JavaScript</label>
+              <button type="button" class="playground-pane-toggle" data-toggle="js" title="Hide JavaScript">×</button>
+            </div>
             <textarea data-js spellcheck="false" placeholder="Define customElements.define(...)"></textarea>
           </div>
         </div>
@@ -86,12 +96,58 @@ export class Playground {
     const iframe = container.querySelector<HTMLIFrameElement>('[data-preview]');
     const runBtn = container.querySelector<HTMLButtonElement>('[data-run]');
     const resetBtn = container.querySelector<HTMLButtonElement>('[data-reset]');
+    const restoreTabsEl = container.querySelector<HTMLElement>('[data-restore-tabs]');
 
     if (!htmlEl || !cssEl || !jsEl || !iframe || !runBtn || !resetBtn) return;
 
     htmlEl.value = this.html;
     cssEl.value = this.css;
     jsEl.value = this.js;
+
+    const paneLabels: Record<string, string> = { html: 'HTML', css: 'CSS', js: 'JavaScript' };
+    const visible: Record<string, boolean> = { html: true, css: true, js: true };
+
+    const updatePaneVisibility = (): void => {
+      (['html', 'css', 'js'] as const).forEach((key) => {
+        const pane = container.querySelector<HTMLElement>(`[data-pane="${key}"]`);
+        if (pane) pane.classList.toggle('playground-editor-pane--hidden', !visible[key]);
+      });
+      if (restoreTabsEl) {
+        const hidden = (['html', 'css', 'js'] as const).filter((k) => !visible[k]);
+        if (hidden.length === 0) {
+          restoreTabsEl.hidden = true;
+          restoreTabsEl.innerHTML = '';
+        } else {
+          restoreTabsEl.hidden = false;
+          restoreTabsEl.innerHTML = hidden
+            .map(
+              (k) =>
+                `<button type="button" class="playground-restore-tab" data-show="${k}">${paneLabels[k]}</button>`
+            )
+            .join('');
+          hidden.forEach((k) => {
+            const btn = restoreTabsEl.querySelector<HTMLButtonElement>(`[data-show="${k}"]`);
+            btn?.addEventListener('click', () => {
+              visible[k] = true;
+              updatePaneVisibility();
+            });
+          });
+        }
+      }
+    };
+
+    container.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-toggle') as 'html' | 'css' | 'js';
+        const visibleCount = (Object.keys(visible) as ('html' | 'css' | 'js')[]).filter(
+          (k) => visible[k]
+        ).length;
+        if (visibleCount > 1 && key) {
+          visible[key] = false;
+          updatePaneVisibility();
+        }
+      });
+    });
 
     const run = (): void => {
       const html = htmlEl.value;
