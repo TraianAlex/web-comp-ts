@@ -121,7 +121,7 @@ export class Playground {
       doc.close();
     };
 
-    runBtn.addEventListener('click', run);
+    runBtn.addEventListener('click', () => run());
     resetBtn.addEventListener('click', () => {
       htmlEl.value = DEFAULT_HTML;
       cssEl.value = DEFAULT_CSS;
@@ -129,6 +129,22 @@ export class Playground {
       run();
     });
 
+    const debounce = <T extends (...args: any[]) => void>(
+      func: T,
+      delay: number
+    ): ((...args: Parameters<T>) => void) => {
+      let timeout: number | undefined;
+      return (...args: Parameters<T>) => {
+        clearTimeout(timeout);
+        timeout = window.setTimeout(() => func(...args), delay);
+      };
+    };
+
+    const debouncedRun = debounce(run, 500);
+
+    htmlEl.addEventListener('input', debouncedRun);
+    cssEl.addEventListener('input', debouncedRun);
+    jsEl.addEventListener('input', debouncedRun);
     run();
   }
 }
