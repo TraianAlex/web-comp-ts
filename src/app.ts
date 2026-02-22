@@ -1,10 +1,11 @@
 import type { Doc } from './types';
 import { docs } from './docs';
 import { Playground } from './playground/sandbox';
+import { TodoApp } from './todos';
 
 export class App {
   private container: HTMLElement;
-  private currentView: 'doc' | 'playground' | null = null;
+  private currentView: 'doc' | 'playground' | 'todos' | null = null;
   private currentDocId: string | null = null;
 
   constructor(container: HTMLElement) {
@@ -21,6 +22,8 @@ export class App {
     const hash = window.location.hash.slice(1);
     if (hash === 'playground') {
       this.showPlayground();
+    } else if (hash === 'todos') {
+      this.showTodos();
     } else if (hash) {
       this.showDoc(hash);
     } else if (docs.length > 0) {
@@ -33,6 +36,8 @@ export class App {
       const hash = window.location.hash.slice(1);
       if (hash === 'playground') {
         this.showPlayground();
+      } else if (hash === 'todos') {
+        this.showTodos();
       } else if (hash) {
         this.showDoc(hash);
       }
@@ -63,10 +68,27 @@ export class App {
 
     const main = this.container.querySelector('.app-main');
     if (main) {
+      main.classList.remove('app-main--todos');
       main.classList.add('app-main--playground');
       const playground = new Playground();
       main.innerHTML = playground.render();
       playground.mount(main as HTMLElement);
+    }
+
+    this.updateNavState();
+  }
+
+  private showTodos(): void {
+    this.currentView = 'todos';
+    this.currentDocId = null;
+
+    const main = this.container.querySelector('.app-main');
+    if (main) {
+      main.classList.remove('app-main--playground');
+      main.classList.add('app-main--todos');
+      const todoApp = new TodoApp();
+      main.innerHTML = todoApp.render();
+      todoApp.mount(main as HTMLElement);
     }
 
     this.updateNavState();
@@ -78,7 +100,8 @@ export class App {
       link.classList.toggle(
         'active',
         href === this.currentDocId ||
-          (href === 'playground' && this.currentView === 'playground')
+          (href === 'playground' && this.currentView === 'playground') ||
+          (href === 'todos' && this.currentView === 'todos')
       );
     });
   }
@@ -99,6 +122,7 @@ export class App {
             ${navItems}
             <div class="nav-section" style="margin-top: 1rem;">Playground</div>
             <a class="nav-link" href="#playground">Sandbox</a>
+            <a class="nav-link" href="#todos">Todos</a>
           </nav>
         </aside>
         <main class="app-main">

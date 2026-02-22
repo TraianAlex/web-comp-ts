@@ -141,10 +141,15 @@ body {
   max-width: 900px;
 }
 
-.app-main--playground {
+.app-main--playground,
+.app-main--todos {
   max-width: none;
   padding: 1rem 1.5rem 2rem;
   min-width: 0;
+}
+
+.todos-page {
+  max-width: 560px;
 }
 
 /* App shell: wrap nav + main on small screens */
