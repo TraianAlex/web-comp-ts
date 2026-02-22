@@ -119,11 +119,14 @@ export const intro: Doc = {
               <span>${this.count}</span>
             </button>
           `;
-          this.shadowRoot.querySelector('button').onclick = () => {
-            this.liked = !this.liked;
-            this.count += this.liked ? 1 : -1;
-            this.render();
-          };
+          const btn = this.shadowRoot.querySelector('button');
+          if (btn) {
+            btn.onclick = () => {
+              this.liked = !this.liked;
+              this.count += this.liked ? 1 : -1;
+              this.render();
+            };
+          }
         }
       }
       window.customElements.define('wc-like-button', LikeButton);
