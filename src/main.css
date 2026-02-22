@@ -413,7 +413,11 @@ body {
   display: flex;
   gap: 0.75rem;
   flex: 1;
-  min-height: 220px;
+  min-height: 15rem;
+}
+
+.playground-container--tall-editors .playground-editors {
+  min-height: 30rem;
 }
 
 .playground-editor-pane {

@@ -53,13 +53,14 @@ export class Playground {
 
   render(): string {
     return `
-      <div class="playground-container">
+      <div class="playground-container" data-playground-container>
         <div class="playground-toolbar">
           <button class="btn btn-primary" data-run>Run</button>
           <button class="btn btn-secondary" data-reset>Reset</button>
+          <button type="button" class="btn btn-secondary playground-editors-height-toggle" data-editors-height-toggle title="Toggle editors height (15rem / 30rem)">Tall editors</button>
         </div>
         <div class="playground-restore-tabs" data-restore-tabs hidden></div>
-        <div class="playground-editors">
+        <div class="playground-editors" data-playground-editors>
           <div class="playground-editor-pane" data-pane="html">
             <div class="playground-editor-pane-header">
               <label>HTML</label>
@@ -191,6 +192,17 @@ export class Playground {
       };
       iframe.src = 'about:blank';
     };
+
+    const containerEl = container.querySelector<HTMLElement>('[data-playground-container]');
+    const heightToggleBtn = container.querySelector<HTMLButtonElement>('[data-editors-height-toggle]');
+    if (containerEl && heightToggleBtn) {
+      heightToggleBtn.addEventListener('click', () => {
+        containerEl.classList.toggle('playground-container--tall-editors');
+        heightToggleBtn.textContent = containerEl.classList.contains('playground-container--tall-editors')
+          ? 'Short editors'
+          : 'Tall editors';
+      });
+    }
 
     runBtn.addEventListener('click', () => run());
     resetBtn.addEventListener('click', () => {
