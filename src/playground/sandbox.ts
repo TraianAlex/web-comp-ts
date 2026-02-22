@@ -149,32 +149,47 @@ export class Playground {
       });
     });
 
+    let runId = 0;
+
     const run = (): void => {
+      runId += 1;
+      const currentRunId = runId;
       const html = htmlEl.value;
       const css = cssEl.value;
       const js = jsEl.value;
 
-      const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
-      if (!doc) return;
+      const doWrite = (doc: Document): void => {
+        doc.open();
+        doc.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { background: #1a1612; color: #f5efe6; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+              ${css}
+            </style>
+          </head>
+          <body>
+            ${html}
+          </body>
+          </html>
+        `);
+        doc.close();
 
-      doc.open();
-      doc.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <style>
-            body { background: #1a1612; color: #f5efe6; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-            ${css}
-          </style>
-        </head>
-        <body>
-          ${html}
-          <script>${js}<\/script>
-        </body>
-        </html>
-      `);
-      doc.close();
+        const script = doc.createElement('script');
+        script.textContent = js;
+        doc.body.appendChild(script);
+      };
+
+      // Load a fresh document so CustomElementRegistry is reset (doc.open() reuses the same document)
+      iframe.onload = () => {
+        if (currentRunId !== runId) return;
+        const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
+        if (doc) doWrite(doc);
+        iframe.onload = null;
+      };
+      iframe.src = 'about:blank';
     };
 
     runBtn.addEventListener('click', () => run());
