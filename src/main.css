@@ -8,6 +8,7 @@
   --text-primary: #f5efe6;
   --text-secondary: #b8a99a;
   --text-muted: #7a6f64;
+  --text-tertiary: #fafe7f;
   
   --accent: #e07c4c;
   --accent-hover: #eb9068;
@@ -479,7 +480,7 @@ body {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   background: var(--bg-code);
-  color: var(--text-primary);
+  color: var(--text-tertiary);
   border: none;
   resize: none;
   outline: none;
