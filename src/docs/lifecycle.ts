@@ -49,9 +49,15 @@ function renderTryIt(): string {
         </div>
         <div class="try-it-example">
           <span class="try-it-label">2. Toggle switch (real-world: settings, notifications)</span>
-          <div class="example-block-content live">
-            <wc-toggle-switch></wc-toggle-switch>
-            <wc-toggle-switch checked="true"></wc-toggle-switch>
+          <div class="example-block-content live" id="lifecycle-toggle-demo">
+            <div class="toggle-switch-row">
+              <wc-toggle-switch></wc-toggle-switch>
+              <span class="toggle-value" data-toggle-value>Value: <strong>false</strong></span>
+            </div>
+            <div class="toggle-switch-row">
+              <wc-toggle-switch checked="true"></wc-toggle-switch>
+              <span class="toggle-value" data-toggle-value>Value: <strong>true</strong></span>
+            </div>
           </div>
         </div>
       </div>
@@ -144,6 +150,23 @@ export const lifecycle: Doc = {
       statusDemo.querySelectorAll<HTMLButtonElement>('[data-status]').forEach((btn) => {
         btn.onclick = () =>
           firstBadge?.setAttribute('status', btn.dataset.status || '');
+      });
+    }
+
+    const toggleDemo = document.getElementById('lifecycle-toggle-demo');
+    if (toggleDemo) {
+      const updateToggleValue = (switchEl: Element, valueEl: Element) => {
+        const checked = switchEl.getAttribute('checked') === 'true';
+        const strong = valueEl.querySelector('strong');
+        if (strong) strong.textContent = String(checked);
+      };
+      toggleDemo.querySelectorAll('.toggle-switch-row').forEach((row) => {
+        const switchEl = row.querySelector('wc-toggle-switch');
+        const valueEl = row.querySelector('[data-toggle-value]');
+        if (!switchEl || !valueEl) return;
+        updateToggleValue(switchEl, valueEl);
+        const observer = new MutationObserver(() => updateToggleValue(switchEl, valueEl));
+        observer.observe(switchEl, { attributes: true, attributeFilter: ['checked'] });
       });
     }
   },
