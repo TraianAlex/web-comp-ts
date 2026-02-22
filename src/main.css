@@ -146,6 +146,30 @@ body {
   min-width: 0;
 }
 
+/* App shell: wrap nav + main on small screens */
+@media (max-width: 768px) {
+  .app-shell {
+    flex-direction: column;
+    padding-top: var(--header-height);
+  }
+
+  .app-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .app-main {
+    margin-left: 0;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 /* Doc content */
 .doc-content h1 {
   font-size: 2rem;
