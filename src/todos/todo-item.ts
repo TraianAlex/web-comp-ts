@@ -8,7 +8,7 @@ export class TodoItemElement extends HTMLElement {
     return ['data-id', 'data-title', 'data-completed'];
   }
 
-  private get id(): string {
+  private get todoId(): string {
     return this.getAttribute('data-id') ?? '';
   }
 
@@ -48,8 +48,8 @@ export class TodoItemElement extends HTMLElement {
     if (!this.shadowRoot) return;
     const checkbox = this.shadowRoot.querySelector('.checkbox');
     const btnDelete = this.shadowRoot.querySelector('.btn-delete');
-    checkbox?.addEventListener('change', () => todosStore.toggle(this.id));
-    btnDelete?.addEventListener('click', () => todosStore.remove(this.id));
+    checkbox?.addEventListener('change', () => todosStore.toggle(this.todoId));
+    btnDelete?.addEventListener('click', () => todosStore.remove(this.todoId));
   }
 }
 
