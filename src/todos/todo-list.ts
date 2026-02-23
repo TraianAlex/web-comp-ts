@@ -1,4 +1,3 @@
-import type { Todo } from './types';
 import { todosStore } from './todos-store';
 import { registerTodoItem, createTodoItemElement } from './todo-item';
 
