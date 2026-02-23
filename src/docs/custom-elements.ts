@@ -86,9 +86,9 @@ export const customElementsDoc: Doc = {
           const name = this.getAttribute('name') || 'World';
           this.innerHTML = `<strong>Hello, ${name}!</strong>`;
         }
-        attributeChangedCallback(name: string, _oldVal: string, newVal: string) {
+        attributeChangedCallback(name: string, _oldVal: string | null, newVal: string | null) {
           if (name === 'name')
-            this.innerHTML = `<strong>Hello, ${newVal || 'World'}!</strong>`;
+            this.innerHTML = `<strong>Hello, ${newVal ?? 'World'}!</strong>`;
         }
       }
       window.customElements.define('wc-greeting', Greeting);
@@ -114,7 +114,16 @@ export const customElementsDoc: Doc = {
     }
     if (!window.customElements.get('wc-user-chip')) {
       class UserChip extends HTMLElement {
+        static get observedAttributes(): string[] {
+          return ['name'];
+        }
         connectedCallback() {
+          this.render();
+        }
+        attributeChangedCallback(name: string) {
+          if (name === 'name') this.render();
+        }
+        private render() {
           const name = this.getAttribute('name') || 'User';
           const initial = name.charAt(0).toUpperCase();
           this.innerHTML = `
